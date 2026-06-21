@@ -1,0 +1,186 @@
+// src/features/product/data/dummyProducts.ts
+// Realistic dummy data for Level 1 (before backend is wired).
+// picsum.photos/seed/{id}/400/300 gives deterministic random images.
+
+import type { Product } from "../types/product.types";
+
+export const dummyProducts: Product[] = [
+  {
+    id: "p1",
+    storeId: "s1",
+    storeName: "Toko Elektronik Maju",
+    name: "Earbuds Wireless Pro X200",
+    description:
+      "True wireless earbuds dengan noise cancellation aktif, battery 8 jam, case pengisi 32 jam. Cocok untuk kerja dan olahraga.",
+    price: 450000,
+    stock: 34,
+    rating: 4.8,
+    reviewCount: 214,
+    category: "Elektronik",
+    imageUrl: "https://picsum.photos/seed/p1/400/300",
+  },
+  {
+    id: "p2",
+    storeId: "s1",
+    storeName: "Toko Elektronik Maju",
+    name: "Powerbank 20000mAh Fast Charge",
+    description:
+      "Powerbank kapasitas besar dengan teknologi fast charge 65W. Isi ulang laptop dan 2 handphone sekaligus.",
+    price: 320000,
+    stock: 18,
+    rating: 4.6,
+    reviewCount: 89,
+    category: "Elektronik",
+    imageUrl: "https://picsum.photos/seed/p2/400/300",
+  },
+  {
+    id: "p3",
+    storeId: "s2",
+    storeName: "Fashion Hub Sari",
+    name: "Kemeja Batik Premium Pria",
+    description:
+      "Batik modern motif parang dengan bahan katun premium, nyaman dipakai seharian. Tersedia ukuran S–XXL.",
+    price: 185000,
+    stock: 52,
+    rating: 4.7,
+    reviewCount: 310,
+    category: "Fashion",
+    imageUrl: "https://picsum.photos/seed/p3/400/300",
+  },
+  {
+    id: "p4",
+    storeId: "s2",
+    storeName: "Fashion Hub Sari",
+    name: "Tas Ransel Laptop Waterproof",
+    description:
+      "Ransel anti-air dengan kompartemen laptop 15 inch, slot USB charging, dan desain ergonomis.",
+    price: 275000,
+    stock: 27,
+    rating: 4.5,
+    reviewCount: 176,
+    category: "Fashion",
+    imageUrl: "https://picsum.photos/seed/p4/400/300",
+  },
+  {
+    id: "p5",
+    storeId: "s3",
+    storeName: "Dapur Sehat Bu Tini",
+    name: "Sambal Bawang Homemade (250gr)",
+    description:
+      "Sambal bawang goreng pedas nikmat, tanpa pengawet, dibuat fresh setiap hari. Tahan 2 minggu di kulkas.",
+    price: 35000,
+    stock: 100,
+    rating: 4.9,
+    reviewCount: 528,
+    category: "Makanan",
+    imageUrl: "https://picsum.photos/seed/p5/400/300",
+  },
+  {
+    id: "p6",
+    storeId: "s3",
+    storeName: "Dapur Sehat Bu Tini",
+    name: "Kue Nastar Premium isi 20 pcs",
+    description:
+      "Nastar homemade dengan selai nanas asli, tekstur lembut, tidak terlalu manis. Dikemas dalam toples cantik.",
+    price: 75000,
+    stock: 40,
+    rating: 4.8,
+    reviewCount: 203,
+    category: "Makanan",
+    imageUrl: "https://picsum.photos/seed/p6/400/300",
+  },
+  {
+    id: "p7",
+    storeId: "s4",
+    storeName: "Rumah Sehat Store",
+    name: "Kursi Ergonomis Kantor Mesh",
+    description:
+      "Kursi kerja dengan sandaran mesh breathable, penyangga lumbar adjustable, armrest 4D. Ideal untuk WFH.",
+    price: 1850000,
+    stock: 8,
+    rating: 4.4,
+    reviewCount: 62,
+    category: "Furnitur",
+    imageUrl: "https://picsum.photos/seed/p7/400/300",
+  },
+  {
+    id: "p8",
+    storeId: "s4",
+    storeName: "Rumah Sehat Store",
+    name: "Lampu LED Meja Belajar",
+    description:
+      "Lampu LED dengan 3 mode warna dan 5 tingkat kecerahan, port USB charging, leher fleksibel 360°.",
+    price: 120000,
+    stock: 45,
+    rating: 4.6,
+    reviewCount: 155,
+    category: "Perabot",
+    imageUrl: "https://picsum.photos/seed/p8/400/300",
+  },
+  {
+    id: "p9",
+    storeId: "s5",
+    storeName: "Sport Galaxy",
+    name: "Sepatu Lari Running Pro",
+    description:
+      "Sepatu lari dengan teknologi foam cushioning, sol anti-slip, material mesh breathable. Ringan hanya 280gr.",
+    price: 695000,
+    stock: 22,
+    rating: 4.7,
+    reviewCount: 418,
+    category: "Olahraga",
+    imageUrl: "https://picsum.photos/seed/p9/400/300",
+  },
+  {
+    id: "p10",
+    storeId: "s5",
+    storeName: "Sport Galaxy",
+    name: "Matras Yoga Premium 6mm",
+    description:
+      "Matras yoga anti-slip dengan ketebalan 6mm, material TPE ramah lingkungan, lebar 61cm. Tersedia 5 warna.",
+    price: 250000,
+    stock: 31,
+    rating: 4.5,
+    reviewCount: 97,
+    category: "Olahraga",
+    imageUrl: "https://picsum.photos/seed/p10/400/300",
+  },
+  {
+    id: "p11",
+    storeId: "s6",
+    storeName: "Toko Buku Cendekia",
+    name: "Clean Code — Robert C. Martin",
+    description:
+      "Buku wajib programmer. Panduan menulis kode yang bersih, maintainable, dan profesional.",
+    price: 145000,
+    stock: 60,
+    rating: 4.9,
+    reviewCount: 732,
+    category: "Buku",
+    imageUrl: "https://picsum.photos/seed/p11/400/300",
+  },
+  {
+    id: "p12",
+    storeId: "s6",
+    storeName: "Toko Buku Cendekia",
+    name: "Atomic Habits — James Clear",
+    description:
+      "Buku tentang cara membangun kebiasaan baik dan menghilangkan kebiasaan buruk dengan sistem yang terbukti.",
+    price: 115000,
+    stock: 75,
+    rating: 4.8,
+    reviewCount: 945,
+    category: "Buku",
+    imageUrl: "https://picsum.photos/seed/p12/400/300",
+  },
+];
+
+// All unique stores from the products
+export const dummyStores = [
+  { id: "s1", name: "Toko Elektronik Maju", productCount: 2 },
+  { id: "s2", name: "Fashion Hub Sari", productCount: 2 },
+  { id: "s3", name: "Dapur Sehat Bu Tini", productCount: 2 },
+  { id: "s4", name: "Rumah Sehat Store", productCount: 2 },
+  { id: "s5", name: "Sport Galaxy", productCount: 2 },
+  { id: "s6", name: "Toko Buku Cendekia", productCount: 2 },
+];
