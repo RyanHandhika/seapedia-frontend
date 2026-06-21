@@ -44,6 +44,15 @@ interface AuthState {
   // Called after re-fetching /me to update user info
   updateUser: (partial: Partial<User>) => void;
 
+  // Replaces the full roles list — used to re-sync from /me on
+  // page refresh, since `roles` (unlike `token`/`activeRole`) is
+  // NOT persisted to localStorage and would otherwise reset to [].
+  setRoles: (roles: Role[]) => void;
+
+  // Appends a single role (e.g. after "Become a Seller" succeeds)
+  // without disturbing any role already owned or the active role.
+  addRole: (role: Role) => void;
+
   // ── HELPERS ───────────────────────────────────────────────
   isAuthenticated: () => boolean;
   hasRole: (role: Role) => boolean;
@@ -82,6 +91,16 @@ export const useAuthStore = create<AuthState>()(
         set({ user: { ...current, ...partial } });
       },
 
+      setRoles: (roles) => {
+        set({ roles });
+      },
+
+      addRole: (role) => {
+        const current = get().roles;
+        if (current.includes(role)) return; // Already owned — no-op
+        set({ roles: [...current, role] });
+      },
+
       // Derived "computed" values — calculated from state on the fly
       isAuthenticated: () => !!get().token,
       hasRole: (role) => get().roles.includes(role),
@@ -90,8 +109,9 @@ export const useAuthStore = create<AuthState>()(
       name: "seapedia-auth", // localStorage key name
 
       // SECURITY: Only persist the token and activeRole.
-      // The full 'user' object is re-fetched from /api/auth/me
-      // on every page load to ensure it's always fresh.
+      // The full 'user' object AND 'roles' are re-fetched from
+      // /api/auth/me on every page load to ensure they're always
+      // fresh (see useCurrentUser.ts, which calls setRoles()).
       partialize: (state) => ({
         token: state.token,
         activeRole: state.activeRole,

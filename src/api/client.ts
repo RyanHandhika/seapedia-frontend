@@ -18,7 +18,7 @@ import axios, { AxiosError } from "axios";
 import { useAuthStore } from "@stores/authStore";
 
 // Create the axios instance
-// VITE_API_URL comes from your .env file: VITE_API_URL=http://localhost:8000/api
+// VITE_API_URL comes from your .env file: VITE_API_URL=http://localhost:4000/api
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "/api",
   headers: { "Content-Type": "application/json" },

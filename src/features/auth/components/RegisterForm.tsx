@@ -1,8 +1,16 @@
 // src/features/auth/components/RegisterForm.tsx
-import React, { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+//
+// Registration is now intentionally simple: username, email,
+// password. No role checkboxes — every new account is automatically
+// a BUYER (see useRegister.ts / backend). Seller and Driver are
+// acquired later from the Account page (see RoleUpgradeCard.tsx),
+// matching how Shopee/Tokopedia onboard sellers after signup rather
+// than during it.
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, ShoppingBag, Store, Truck, Info } from "lucide-react";
+import { Eye, EyeOff, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { registerSchema, type RegisterFormValues } from "../types/auth.schemas";
 import { useRegister } from "../hooks/useRegister";
@@ -10,38 +18,6 @@ import { Input } from "@components/ui/Input/Input";
 import { Button } from "@components/ui/Button/Button";
 import { Alert } from "@components/ui/Alert/Alert";
 import { cn } from "@utils/cn";
-import type { Role } from "@types";
-
-// Role options the user can pick at registration (Admin is excluded)
-const ROLE_OPTIONS: {
-  role: Role;
-  label: string;
-  desc: string;
-  icon: React.ElementType;
-  color: string;
-}[] = [
-  {
-    role: "BUYER",
-    label: "Pembeli",
-    desc: "Belanja produk dari berbagai penjual",
-    icon: ShoppingBag,
-    color: "teal",
-  },
-  {
-    role: "SELLER",
-    label: "Penjual",
-    desc: "Jual produk dan kelola toko kamu",
-    icon: Store,
-    color: "amber",
-  },
-  {
-    role: "DRIVER",
-    label: "Pengirim",
-    desc: "Antar pesanan dan hasilkan pendapatan",
-    icon: Truck,
-    color: "blue",
-  },
-];
 
 // Simple password strength indicator
 function getPasswordStrength(password: string): {
@@ -66,11 +42,9 @@ export function RegisterForm() {
     register,
     handleSubmit,
     watch,
-    control,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { roles: ["BUYER"] }, // Default: Buyer is pre-selected
   });
 
   const password = watch("password", "");
@@ -155,86 +129,15 @@ export function RegisterForm() {
           {...register("confirmPassword")}
         />
 
-        {/* Role selection checkboxes */}
-        <div>
-          <label className="text-sm font-medium text-slate-700 flex items-center gap-1.5 mb-2">
-            Pilih Peran
-            <span className="text-red-500">*</span>
-            <span
-              title="Satu akun bisa punya lebih dari satu peran"
-              className="text-slate-400 cursor-help"
-            >
-              <Info size={13} />
-            </span>
-          </label>
-          <p className="text-xs text-slate-400 mb-3">
-            Pilih satu atau lebih peran. Kamu bisa ganti peran kapan saja.
+        {/* Info banner: explains the new account model instead of asking the user to choose */}
+        <div className="flex items-start gap-2.5 bg-teal-50 border border-teal-100 rounded-xl p-3.5">
+          <ShoppingBag size={16} className="text-teal-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-teal-700 leading-relaxed">
+            Akun kamu otomatis terdaftar sebagai <strong>Pembeli</strong>. Kamu
+            bisa upgrade jadi <strong>Penjual</strong> atau{" "}
+            <strong>Pengirim</strong> kapan saja dari halaman Akun setelah
+            masuk.
           </p>
-
-          <Controller
-            name="roles"
-            control={control}
-            render={({ field }) => (
-              <div className="grid grid-cols-1 gap-2">
-                {ROLE_OPTIONS.map(
-                  ({ role, label, desc, icon: Icon, color }) => {
-                    const isSelected = field.value?.includes(role);
-                    const borderMap: Record<string, string> = {
-                      teal: "border-teal-500  bg-teal-50  text-teal-700",
-                      amber: "border-amber-500 bg-amber-50 text-amber-700",
-                      blue: "border-blue-500  bg-blue-50  text-blue-700",
-                    };
-                    return (
-                      <label
-                        key={role}
-                        className={cn(
-                          "flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all",
-                          isSelected
-                            ? borderMap[color]
-                            : "border-slate-200 hover:border-slate-300",
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          className="sr-only"
-                          checked={isSelected}
-                          onChange={(e) => {
-                            const next = e.target.checked
-                              ? [...(field.value ?? []), role]
-                              : (field.value ?? []).filter((r) => r !== role);
-                            field.onChange(next);
-                          }}
-                        />
-                        <Icon
-                          size={18}
-                          className={isSelected ? "" : "text-slate-400"}
-                        />
-                        <div>
-                          <p
-                            className={cn(
-                              "text-sm font-medium",
-                              !isSelected && "text-slate-700",
-                            )}
-                          >
-                            {label}
-                          </p>
-                          <p className="text-xs text-slate-400">{desc}</p>
-                        </div>
-                        {isSelected && (
-                          <span className="ml-auto text-lg">✓</span>
-                        )}
-                      </label>
-                    );
-                  },
-                )}
-              </div>
-            )}
-          />
-          {errors.roles && (
-            <p className="mt-1 text-xs text-red-500">
-              ⚠ {errors.roles.message}
-            </p>
-          )}
         </div>
 
         <Button

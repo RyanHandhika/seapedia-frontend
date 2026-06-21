@@ -17,6 +17,14 @@ export const ENDPOINTS = {
     ME: "/auth/me", // Returns current user profile
   },
 
+  // ── ROLE UPGRADE ──────────────────────────────────────────
+  // Every account starts as BUYER only. These let an already-logged-in
+  // user acquire an additional role without creating a new account.
+  ROLE_UPGRADE: {
+    BECOME_SELLER: "/users/me/become-seller", // POST { storeName }
+    BECOME_DRIVER: "/users/me/become-driver", // POST { vehicleType, licenseNumber, phoneNumber }
+  },
+
   // ── PRODUCTS (public + seller) ────────────────────────────
   PRODUCTS: {
     LIST: "/products", // GET  — public
