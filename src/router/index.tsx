@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/router/index.tsx
 //
 // Central route configuration for SEAPEDIA.
@@ -32,6 +33,7 @@ const RegisterPage = lazy(() => import("@pages/public/RegisterPage"));
 const RoleSelectionPage = lazy(
   () => import("@pages/private/RoleSelectionPage"),
 );
+const AccountPage = lazy(() => import("@pages/private/AccountPage"));
 
 // Buyer
 const BuyerDashboardPage = lazy(
@@ -234,6 +236,14 @@ export const router = createBrowserRouter([
               </S>
             ),
           },
+          {
+            path: "account",
+            element: (
+              <S>
+                <AccountPage />
+              </S>
+            ),
+          },
         ],
       },
     ],
@@ -319,6 +329,14 @@ export const router = createBrowserRouter([
               </S>
             ),
           },
+          {
+            path: "account",
+            element: (
+              <S>
+                <AccountPage />
+              </S>
+            ),
+          },
         ],
       },
     ],
@@ -377,6 +395,14 @@ export const router = createBrowserRouter([
             element: (
               <S>
                 <DriverPlaceholder title="Penghasilan" />
+              </S>
+            ),
+          },
+          {
+            path: "account",
+            element: (
+              <S>
+                <AccountPage />
               </S>
             ),
           },
