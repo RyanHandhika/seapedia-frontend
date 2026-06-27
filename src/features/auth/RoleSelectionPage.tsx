@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
-import { Button, Logo } from "@/components/ui";
+import { Logo } from "@/components/ui";
 import { cn, ROLE_HOME, ROLE_LABEL } from "@/lib/utils";
 import { toast } from "@/stores/toastStore";
 import type { SwitchableRole } from "@/types";
 
-const ROLE_COPY: Record<SwitchableRole, { tag: string; desc: string; tone: string }> = {
+const ROLE_COPY: Record<
+  SwitchableRole,
+  { tag: string; desc: string; tone: string }
+> = {
   BUYER: {
     tag: "Shop fresh",
     desc: "Browse stores, fill your cart, and track every delivery.",
@@ -64,7 +67,8 @@ export function RoleSelectionPage() {
             How do you want to continue?
           </h1>
           <p className="mt-1 text-sm text-ink-300">
-            Your account has more than one role. Pick one — you can switch later.
+            Your account has more than one role. Pick one — you can switch
+            later.
           </p>
         </div>
 
@@ -85,7 +89,9 @@ export function RoleSelectionPage() {
                 <p className="text-xs font-semibold uppercase tracking-wider opacity-80">
                   {copy.tag}
                 </p>
-                <h3 className="mt-1 font-display text-xl font-bold">{ROLE_LABEL[role]}</h3>
+                <h3 className="mt-1 font-display text-xl font-bold">
+                  {ROLE_LABEL[role]}
+                </h3>
                 <p className="mt-2 text-sm opacity-90">{copy.desc}</p>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium">
                   {busy === role ? "Entering…" : "Continue →"}

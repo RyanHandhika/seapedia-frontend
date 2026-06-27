@@ -1,11 +1,14 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "prefix"
+> {
   label?: string;
   error?: string;
   hint?: string;
-  prefix?: ReactNode;
+  prefix?: React.ReactNode;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -14,7 +17,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-ink-700">
+          <label
+            htmlFor={inputId}
+            className="mb-1.5 block text-sm font-medium text-ink-700"
+          >
             {label}
           </label>
         )}
@@ -31,7 +37,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               "h-11 w-full rounded-xl border bg-white px-3.5 text-sm text-ink-900 placeholder:text-ink-400",
               "transition-colors focus-visible:focus-ring",
               prefix && "pl-9",
-              error ? "border-coral-400" : "border-ink-200 hover:border-ink-300",
+              error
+                ? "border-coral-400"
+                : "border-ink-200 hover:border-ink-300",
               className,
             )}
             aria-invalid={!!error}
@@ -59,7 +67,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={selectId} className="mb-1.5 block text-sm font-medium text-ink-700">
+          <label
+            htmlFor={selectId}
+            className="mb-1.5 block text-sm font-medium text-ink-700"
+          >
             {label}
           </label>
         )}
@@ -93,7 +104,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={taId} className="mb-1.5 block text-sm font-medium text-ink-700">
+          <label
+            htmlFor={taId}
+            className="mb-1.5 block text-sm font-medium text-ink-700"
+          >
             {label}
           </label>
         )}
