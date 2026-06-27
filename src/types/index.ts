@@ -263,3 +263,13 @@ export interface AdminUser {
   userRoles: { role: Role }[];
   createdAt: string;
 }
+
+// ── App reviews (about the SEAPEDIA app itself, not products) ─────────────────
+export interface AppReview {
+  id: string;
+  reviewerName: string;
+  rating: number;
+  comment: string;
+  userId?: string | null;
+  createdAt: string;
+}

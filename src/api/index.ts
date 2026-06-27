@@ -5,3 +5,4 @@ export { buyerApi } from "./buyer";
 export { sellerApi } from "./seller";
 export { driverApi } from "./driver";
 export { adminApi } from "./admin";
+export { reviewApi } from "./review";
