@@ -49,8 +49,12 @@ export function setAuthFailureHandler(fn: () => void) {
   onAuthFailure = fn;
 }
 
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : "/api";
+
 export const http: AxiosInstance = axios.create({
-  baseURL: "/api",
+  baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
 });
 
