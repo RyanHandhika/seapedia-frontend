@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { ProductCard, ProductCardSkeleton } from "./ProductCard";
 import { ReviewsSection } from "./ReviewsSection";
@@ -24,28 +24,33 @@ export function LandingPage() {
               <span className="text-brand-300">delivered to your door.</span>
             </h1>
             <p className="mt-4 max-w-md text-ink-300">
-              Buy from local stores, open your own shop, or earn as a driver —
-              all from one account. Wallet payments, transparent pricing,
-              real-time tracking.
+              Shop fresh from local stores, pay instantly from your wallet, and
+              track every order in real time — all in one place.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" onClick={() => navigate("/products")}>
-                Start shopping
-              </Button>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-                onClick={() => navigate("/auth/register")}
-              >
-                Open a store
-              </Button>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button size="lg" onClick={() => navigate("/products")}>
+                  Start shopping
+                </Button>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="border-white/20 bg-white/5 text-white hover:bg-white/10"
+                  onClick={() =>
+                    document
+                      .getElementById("why")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  Why SEAPEDIA?
+                </Button>
+              </div>
             </div>
             <div className="mt-10 flex gap-8">
               {[
                 ["≤3h", "Instant delivery"],
                 ["12%", "PPN handled"],
-                ["4-in-1", "Roles per account"],
+                ["100%", "Transparent pricing"],
               ].map(([n, l]) => (
                 <div key={l}>
                   <p className="font-display text-2xl font-bold text-brand-300">
@@ -118,28 +123,6 @@ export function LandingPage() {
         </svg>
       </section>
 
-      {/* ── Categories ── */}
-      <section className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
-        <div className="flex flex-wrap gap-3">
-          {[
-            "All",
-            "Fresh catch",
-            "Frozen",
-            "Shellfish",
-            "Dried",
-            "Ready-to-cook",
-          ].map((c) => (
-            <Link
-              key={c}
-              to="/products"
-              className="rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 transition-colors hover:border-brand-300 hover:text-brand-700"
-            >
-              {c}
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* ── Trending ── */}
       <section className="mx-auto max-w-7xl px-4 pb-16 lg:px-8">
         <div className="mb-6 flex items-end justify-between">
@@ -167,32 +150,86 @@ export function LandingPage() {
       </section>
 
       {/* ── Why ── */}
-      <section id="why" className="border-t border-ink-100 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-14 sm:grid-cols-3 lg:px-8">
-          {[
-            [
-              "Fresh from sellers",
-              "Buy directly from local stores with transparent stock.",
-            ],
-            [
-              "Wallet-first checkout",
-              "Top up once, pay instantly. PPN and delivery fees shown upfront.",
-            ],
-            [
-              "Track every step",
-              "From packing to your door — follow each order in real time.",
-            ],
-          ].map(([t, d]) => (
-            <div key={t} className="rounded-2xl border border-ink-100 p-6">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-600">
-                ✓
+      <section
+        id="why"
+        className="relative overflow-hidden border-t border-ink-100 bg-gradient-to-b from-white to-brand-50/40"
+      >
+        {/* background decoration */}
+        <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-brand-100/40 blur-3xl" />
+        <div className="pointer-events-none absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-coral-100/30 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-20 lg:px-8">
+          {/* Header */}
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-700">
+              Why SEAPEDIA
+            </span>
+            <h2 className="mt-4 font-display text-3xl font-bold text-ink-900 sm:text-4xl">
+              Fresh shopping, zero hassle
+            </h2>
+            <p className="mt-3 text-ink-500">
+              Everything you need to shop fresh from local stores — simple,
+              transparent, and delivered to your door.
+            </p>
+          </div>
+
+          {/* Feature cards */}
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:grid-cols-3">
+            {[
+              {
+                title: "Fresh from sellers",
+                desc: "Buy directly from local stores with transparent stock and pricing.",
+                tone: "from-brand-500 to-brand-600",
+                icon: (
+                  <path d="M3 9l1-5h16l1 5M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9M4 9h16M9 13h6" />
+                ),
+              },
+              {
+                title: "Wallet-first checkout",
+                desc: "Top up once, pay instantly. PPN and delivery fees shown upfront.",
+                tone: "from-coral-500 to-coral-600",
+                icon: (
+                  <path d="M3 7h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM17 13h.01M3 7l2-3h11l2 3" />
+                ),
+              },
+              {
+                title: "Track every step",
+                desc: "From packing to your door — follow each order in real time.",
+                tone: "from-sky-500 to-sky-600",
+                icon: (
+                  <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                ),
+              },
+            ].map((f) => (
+              <div
+                key={f.title}
+                className="group rounded-2xl border border-ink-100 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
+              >
+                <div
+                  className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${f.tone} text-white shadow-sm transition-transform duration-300 group-hover:scale-110`}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                  >
+                    {f.icon}
+                  </svg>
+                </div>
+                <h3 className="mt-4 font-display text-lg font-semibold text-ink-900">
+                  {f.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-500">
+                  {f.desc}
+                </p>
               </div>
-              <h3 className="mt-3 font-display font-semibold text-ink-900">
-                {t}
-              </h3>
-              <p className="mt-1 text-sm text-ink-500">{d}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 

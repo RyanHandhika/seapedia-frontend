@@ -268,6 +268,7 @@ export interface AdminUser {
 export interface AppReview {
   id: string;
   reviewerName: string;
+  reviewerRole?: Role | null;
   rating: number;
   comment: string;
   userId?: string | null;

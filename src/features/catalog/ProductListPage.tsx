@@ -9,7 +9,11 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 // Shared by the public catalog (/products) and the buyer catalog
 // (/buyer/products). The only difference is the link target + add-to-cart.
-export function ProductListPage({ basePath = "/products" }: { basePath?: string }) {
+export function ProductListPage({
+  basePath = "/products",
+}: {
+  basePath?: string;
+}) {
   const navigate = useNavigate();
   const activeRole = useAuthStore((s) => s.activeRole);
   const isBuyer = activeRole === "BUYER";
@@ -34,8 +38,12 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
       <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-ink-900">Browse products</h1>
-        <p className="text-sm text-ink-500">Fresh listings from stores across the marketplace.</p>
+        <h1 className="font-display text-2xl font-bold text-ink-900">
+          Browse products
+        </h1>
+        <p className="text-sm text-ink-500">
+          Fresh listings from stores across the marketplace.
+        </p>
       </div>
 
       {/* Filters */}
@@ -44,10 +52,20 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
           label="Search"
           placeholder="Search products…"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           prefix={
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" />
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4-4" />
             </svg>
           }
         />
@@ -57,7 +75,10 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
           placeholder="0"
           className="sm:w-28"
           value={minPrice}
-          onChange={(e) => { setMinPrice(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setMinPrice(e.target.value);
+            setPage(1);
+          }}
         />
         <Input
           label="Max price"
@@ -65,14 +86,19 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
           placeholder="∞"
           className="sm:w-28"
           value={maxPrice}
-          onChange={(e) => { setMaxPrice(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setMaxPrice(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
 
       {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+          {Array.from({ length: 8 }).map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
         </div>
       ) : products.length === 0 ? (
         <EmptyState
@@ -93,7 +119,10 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
                     <Button
                       size="sm"
                       fullWidth
-                      loading={addToCart.isPending && addToCart.variables?.productId === p.id}
+                      loading={
+                        addToCart.isPending &&
+                        addToCart.variables?.productId === p.id
+                      }
                       onClick={(e) => {
                         e.preventDefault();
                         addToCart.mutate({ productId: p.id, quantity: 1 });
@@ -102,7 +131,12 @@ export function ProductListPage({ basePath = "/products" }: { basePath?: string 
                       Add to cart
                     </Button>
                   ) : (
-                    <Button size="sm" variant="secondary" fullWidth onClick={() => navigate(`${basePath}/${p.id}`)}>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      fullWidth
+                      onClick={() => navigate(`${basePath}/${p.id}`)}
+                    >
                       View
                     </Button>
                   )

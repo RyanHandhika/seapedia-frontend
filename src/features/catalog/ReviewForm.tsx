@@ -3,9 +3,8 @@ import { useSubmitReview } from "./reviewHooks";
 import { StarInput } from "./StarRating";
 import { Button, Modal, Textarea } from "@/components/ui";
 import { useAuthStore } from "@/stores/authStore";
+import { ROLE_LABEL } from "@/lib/utils";
 
-// The write-a-review modal. Submission is login-gated by design (anti-spam),
-// so the reviewer name comes from the authenticated account, not a free field.
 export function ReviewForm({
   open,
   onClose,
@@ -14,6 +13,7 @@ export function ReviewForm({
   onClose: () => void;
 }) {
   const user = useAuthStore((s) => s.user);
+  const activeRole = useAuthStore((s) => s.activeRole);
   const submit = useSubmitReview();
 
   const [rating, setRating] = useState(0);
@@ -72,6 +72,16 @@ export function ReviewForm({
           <p className="text-sm text-ink-500">
             Posting as{" "}
             <span className="font-medium text-ink-800">{user.username}</span>
+            {activeRole && activeRole !== "ADMIN" && (
+              <>
+                {" "}
+                —{" "}
+                <span className="font-medium text-brand-700">
+                  {ROLE_LABEL[activeRole]}
+                </span>{" "}
+                perspective
+              </>
+            )}
           </p>
         )}
         <div className="flex flex-col items-center gap-2 rounded-xl bg-ink-50 py-4">
