@@ -1,14 +1,38 @@
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { useCartStore } from "@/stores/cartStore";
 import { Button, Logo } from "@/components/ui";
-import { cn, ROLE_HOME } from "@/lib/utils";
+import { cn, ROLE_LABEL } from "@/lib/utils";
 
 export function PublicLayout() {
   const status = useAuthStore((s) => s.status);
   const activeRole = useAuthStore((s) => s.activeRole);
   const user = useAuthStore((s) => s.user);
+  const cartCount = useCartStore((s) => s.count);
   const navigate = useNavigate();
+  const location = useLocation();
   const authed = status === "authenticated" && activeRole;
+
+  // Scroll ke section #why di landing page. Kalau sedang di halaman lain,
+  // navigasi ke home dulu, baru scroll setelah section ter-render.
+  function goToWhy() {
+    const scrollToWhy = () => {
+      const el = document.getElementById("why");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    };
+    if (location.pathname === "/") {
+      scrollToWhy();
+    } else {
+      navigate("/");
+      setTimeout(scrollToWhy, 300);
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-foam">
@@ -46,53 +70,63 @@ export function PublicLayout() {
                 )
               }
             >
-              Products
+              Browse Products
             </NavLink>
+            <button
+              onClick={goToWhy}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-ink-900"
+            >
+              Why SEAPEDIA
+            </button>
           </nav>
 
           {/* Kanan: auth */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {authed ? (
               <>
-                {user && (
-                  <span className="hidden text-sm text-ink-500 sm:inline">
-                    Hi,{" "}
-                    <span className="font-medium text-ink-800">
-                      {user.username}
-                    </span>
-                  </span>
+                {/* Cart (hanya untuk buyer) */}
+                {activeRole === "BUYER" && (
+                  <button
+                    onClick={() => navigate("/buyer/cart")}
+                    className="relative grid h-10 w-10 place-items-center rounded-xl text-ink-600 hover:bg-ink-100"
+                    aria-label="Cart"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 7h14l-1.5 9H7.5zM6 7L5 3H3M9 21a1 1 0 1 0 0 .01M17 21a1 1 0 1 0 0 .01" />
+                    </svg>
+                    {cartCount > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-coral-500 px-1 text-[10px] font-bold text-white">
+                        {cartCount}
+                      </span>
+                    )}
+                  </button>
                 )}
-                <Button
-                  size="lg"
-                  onClick={() => navigate(ROLE_HOME[activeRole])}
-                  className="shadow-lift ring-1 ring-brand-300"
+
+                {/* User chip (klik → profile) */}
+                <button
+                  onClick={() => navigate("/buyer/profile")}
+                  className="flex items-center gap-2 rounded-xl border border-ink-100 py-1.5 pl-1.5 pr-3 transition-colors hover:bg-ink-50"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />
-                  </svg>
-                  Go to dashboard
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </Button>
+                  <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-500 text-xs font-bold text-white">
+                    {user?.username?.slice(0, 2).toUpperCase()}
+                  </span>
+                  <div className="hidden leading-tight text-left sm:block">
+                    <p className="text-xs font-semibold text-ink-900">
+                      {user?.username}
+                    </p>
+                    <p className="text-[10px] text-ink-400">
+                      {ROLE_LABEL[activeRole]}
+                    </p>
+                  </div>
+                </button>
               </>
             ) : (
               <>
