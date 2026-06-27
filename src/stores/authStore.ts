@@ -1,121 +1,146 @@
-// ═══════════════════════════════════════════════════════════
-// src/stores/authStore.ts
-//
-// Zustand store for authentication state.
-//
-// WHAT IS ZUSTAND?
-// Zustand is a simple state management library. It's like a
-// global variable that React components can "subscribe" to —
-// when the variable changes, all subscribed components re-render.
-//
-// WHY NOT USE REACT CONTEXT?
-// Context re-renders ALL consumers on any change.
-// Zustand is smarter — components only re-render when the
-// specific slice of state they USE actually changes.
-//
-// WHAT DOES THIS STORE HOLD?
-// - token: the JWT from the backend (sent in every API request)
-// - user:  the logged-in user's info
-// - activeRole: which role is currently active (BUYER/SELLER/etc.)
-// - roles: ALL roles owned by this user
-// ═══════════════════════════════════════════════════════════
-
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { User, Role } from "@types";
+import { authApi } from "@/api/auth";
+import {
+  setAuthFailureHandler,
+  tokenStore,
+} from "@/api/client";
+import { decodeJwt } from "@/lib/utils";
+import type { LoginResult, Role, SafeUser, SwitchableRole } from "@/types";
 
-interface AuthState {
-  // ── STATE ─────────────────────────────────────────────────
-  token: string | null;
-  user: User | null;
-  activeRole: Role | null;
+interface AccessClaims {
+  sub: string;
   roles: Role[];
-
-  // ── ACTIONS ───────────────────────────────────────────────
-  // Called after a successful login
-  setAuth: (token: string, user: User, roles: Role[]) => void;
-
-  // Called when user picks a role on the RoleSelectionPage
-  setActiveRole: (role: Role) => void;
-
-  // Called on logout — clears EVERYTHING
-  clearAuth: () => void;
-
-  // Called after re-fetching /me to update user info
-  updateUser: (partial: Partial<User>) => void;
-
-  // Replaces the full roles list — used to re-sync from /me on
-  // page refresh, since `roles` (unlike `token`/`activeRole`) is
-  // NOT persisted to localStorage and would otherwise reset to [].
-  setRoles: (roles: Role[]) => void;
-
-  // Appends a single role (e.g. after "Become a Seller" succeeds)
-  // without disturbing any role already owned or the active role.
-  addRole: (role: Role) => void;
-
-  // ── HELPERS ───────────────────────────────────────────────
-  isAuthenticated: () => boolean;
-  hasRole: (role: Role) => boolean;
+  activeRole: Role;
+  sid: string;
+  exp: number;
 }
 
-export const useAuthStore = create<AuthState>()(
-  // 'persist' saves the store to localStorage automatically.
-  // When the user refreshes the page, the token and activeRole
-  // are restored from localStorage instead of being lost.
-  persist(
-    (set, get) => ({
-      // Initial state — all null/empty until login
-      token: null,
+interface PendingState {
+  rolePendingToken: string;
+  roles: Role[];
+}
+
+interface AuthState {
+  user: SafeUser | null;
+  roles: Role[];
+  activeRole: Role | null;
+  status: "idle" | "loading" | "authenticated" | "unauthenticated";
+  pending: PendingState | null;
+
+  bootstrap: () => Promise<void>;
+  login: (usernameOrEmail: string, password: string) => Promise<LoginResult>;
+  completeRoleSelection: (role: SwitchableRole) => Promise<Role>;
+  switchRole: (role: SwitchableRole) => Promise<Role>;
+  refreshIdentity: () => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+// Derive active role + roles from the access token already in storage.
+function readClaims(): { roles: Role[]; activeRole: Role | null; sub: string | null } {
+  const token = tokenStore.getAccess();
+  if (!token) return { roles: [], activeRole: null, sub: null };
+  const claims = decodeJwt<AccessClaims>(token);
+  if (!claims) return { roles: [], activeRole: null, sub: null };
+  return { roles: claims.roles ?? [], activeRole: claims.activeRole ?? null, sub: claims.sub };
+}
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+  user: null,
+  roles: [],
+  activeRole: null,
+  status: "idle",
+  pending: null,
+
+  // Called once on app start. If tokens exist, fetch the live profile.
+  bootstrap: async () => {
+    const token = tokenStore.getAccess();
+    if (!token) {
+      set({ status: "unauthenticated" });
+      return;
+    }
+    set({ status: "loading" });
+    try {
+      const user = await authApi.me();
+      const { roles, activeRole } = readClaims();
+      set({
+        user,
+        roles: user.roles ?? roles,
+        activeRole: user.activeRole ?? activeRole,
+        status: "authenticated",
+      });
+    } catch {
+      tokenStore.clear();
+      set({ status: "unauthenticated", user: null, roles: [], activeRole: null });
+    }
+  },
+
+  login: async (usernameOrEmail, password) => {
+    const result = await authApi.login({ usernameOrEmail, password });
+    if (result.requiresRoleSelection) {
+      // Multi-role user — hold the pending token, do NOT establish a session.
+      set({
+        pending: {
+          rolePendingToken: result.rolePendingToken,
+          roles: result.roles,
+        },
+        status: "unauthenticated",
+      });
+      return result;
+    }
+    // Single-role / admin — full session issued immediately.
+    tokenStore.setBoth(result.accessToken, result.refreshToken);
+    await get().refreshIdentity();
+    return result;
+  },
+
+  completeRoleSelection: async (role) => {
+    const pending = get().pending;
+    if (!pending) throw new Error("No pending role selection");
+    const session = await authApi.selectRole(pending.rolePendingToken, role);
+    tokenStore.setBoth(session.accessToken, session.refreshToken);
+    set({ pending: null });
+    await get().refreshIdentity();
+    return session.activeRole;
+  },
+
+  switchRole: async (role) => {
+    const { accessToken, activeRole } = await authApi.switchRole(role);
+    tokenStore.setAccess(accessToken);
+    set({ activeRole });
+    return activeRole;
+  },
+
+  refreshIdentity: async () => {
+    const user = await authApi.me();
+    const { roles, activeRole } = readClaims();
+    set({
+      user,
+      roles: user.roles ?? roles,
+      activeRole: user.activeRole ?? activeRole,
+      status: "authenticated",
+    });
+  },
+
+  logout: async () => {
+    await authApi.logout();
+    set({
       user: null,
-      activeRole: null,
       roles: [],
+      activeRole: null,
+      pending: null,
+      status: "unauthenticated",
+    });
+  },
+}));
 
-      setAuth: (token, user, roles) => {
-        set({ token, user, roles, activeRole: null });
-        // Note: activeRole stays null until the user picks one
-        // (or auto-selected if only 1 role)
-      },
-
-      setActiveRole: (role) => {
-        set({ activeRole: role });
-      },
-
-      clearAuth: () => {
-        // Reset EVERYTHING to initial state
-        set({ token: null, user: null, activeRole: null, roles: [] });
-      },
-
-      updateUser: (partial) => {
-        const current = get().user;
-        if (!current) return;
-        set({ user: { ...current, ...partial } });
-      },
-
-      setRoles: (roles) => {
-        set({ roles });
-      },
-
-      addRole: (role) => {
-        const current = get().roles;
-        if (current.includes(role)) return; // Already owned — no-op
-        set({ roles: [...current, role] });
-      },
-
-      // Derived "computed" values — calculated from state on the fly
-      isAuthenticated: () => !!get().token,
-      hasRole: (role) => get().roles.includes(role),
-    }),
-    {
-      name: "seapedia-auth", // localStorage key name
-
-      // SECURITY: Only persist the token and activeRole.
-      // The full 'user' object AND 'roles' are re-fetched from
-      // /api/auth/me on every page load to ensure they're always
-      // fresh (see useCurrentUser.ts, which calls setRoles()).
-      partialize: (state) => ({
-        token: state.token,
-        activeRole: state.activeRole,
-      }),
-    },
-  ),
-);
+// Wire the API client's auth-failure hook to force the store into a clean
+// logged-out state (e.g. when refresh fails).
+setAuthFailureHandler(() => {
+  useAuthStore.setState({
+    user: null,
+    roles: [],
+    activeRole: null,
+    pending: null,
+    status: "unauthenticated",
+  });
+});
