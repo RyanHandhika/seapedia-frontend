@@ -5,8 +5,6 @@ import axios, {
 } from "axios";
 import type { ApiError } from "@/types";
 
-// Token storage keys. Access token lives in memory + localStorage so the app
-// survives a refresh; refresh token in localStorage only (rotated by backend).
 const ACCESS_KEY = "seapedia.accessToken";
 const REFRESH_KEY = "seapedia.refreshToken";
 
@@ -25,7 +23,6 @@ export const tokenStore = {
   },
 };
 
-// A normalized error surface the UI can rely on regardless of transport.
 export class ApiException extends Error {
   code: string;
   status: number;
@@ -43,7 +40,6 @@ export class ApiException extends Error {
   }
 }
 
-// Called when refresh fails — wired up by the auth store to force logout.
 let onAuthFailure: (() => void) | null = null;
 export function setAuthFailureHandler(fn: () => void) {
   onAuthFailure = fn;
@@ -58,25 +54,19 @@ export const http: AxiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach the access token to every request.
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = tokenStore.getAccess();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// ── Transparent refresh ──────────────────────────────────────────────────────
-// On a 401, attempt one refresh, then replay the original request. Concurrent
-// 401s share a single in-flight refresh promise so we never stampede the
-// /auth/refresh endpoint.
 let refreshPromise: Promise<string> | null = null;
 
 async function performRefresh(): Promise<string> {
   const refreshToken = tokenStore.getRefresh();
   if (!refreshToken) throw new Error("No refresh token");
 
-  // Bare axios call (no interceptors) to avoid recursion.
-  const res = await axios.post("/api/auth/refresh", { refreshToken });
+  const res = await axios.post(`${API_BASE}/auth/refresh`, { refreshToken });
   const accessToken = res.data?.data?.accessToken as string | undefined;
   if (!accessToken) throw new Error("Refresh returned no token");
   tokenStore.setAccess(accessToken);
@@ -118,7 +108,6 @@ http.interceptors.response.use(
   },
 );
 
-// Envelope-unwrapping helpers — every backend response is { success, data }.
 export async function apiGet<T>(url: string, params?: object): Promise<T> {
   const res = await http.get(url, { params });
   return res.data.data as T;
@@ -136,7 +125,6 @@ export async function apiDelete<T>(url: string): Promise<T> {
   return res.data.data as T;
 }
 
-// Multipart helper for product image uploads (seller create/update).
 export async function apiPostForm<T>(url: string, form: FormData): Promise<T> {
   const res = await http.post(url, form, {
     headers: { "Content-Type": "multipart/form-data" },
