@@ -146,30 +146,6 @@ export function AuthLayout() {
 
         {/* Form panel */}
         <div className="flex flex-col bg-foam px-4 py-6 lg:items-center lg:justify-center lg:py-10">
-          {/* Mobile top bar: back button + clickable logo (desktop hides this) */}
-          <div className="mb-8 flex items-center justify-between lg:hidden">
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 rounded-lg py-2 pr-3 text-sm font-medium text-ink-600 transition-colors hover:text-brand-700"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-              Back to home
-            </Link>
-            <Link to="/">
-              <Logo className="text-lg" />
-            </Link>
-          </div>
-
           {/* Form */}
           <div className="flex w-full flex-1 items-center justify-center lg:flex-none">
             <div className="w-full max-w-sm">
