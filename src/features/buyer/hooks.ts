@@ -1,8 +1,4 @@
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { buyerApi } from "@/api/buyer";
 import { qk } from "@/lib/queryClient";
 import { useCartStore } from "@/stores/cartStore";
@@ -30,23 +26,35 @@ export function useCart(enabled = true) {
 export function useAddToCart() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) =>
-      buyerApi.addToCart(productId, quantity),
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string;
+      quantity: number;
+    }) => buyerApi.addToCart(productId, quantity),
     onSuccess: (cart) => {
       syncCart(cart);
       qc.setQueryData(qk.cart, cart);
       toast.success("Added to cart");
     },
     onError: (e) =>
-      toast.error(e instanceof ApiException ? e.message : "Could not add to cart"),
+      toast.error(
+        e instanceof ApiException ? e.message : "Could not add to cart",
+      ),
   });
 }
 
 export function useUpdateCartItem() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) =>
-      buyerApi.updateCartItem(productId, quantity),
+    mutationFn: ({
+      productId,
+      quantity,
+    }: {
+      productId: string;
+      quantity: number;
+    }) => buyerApi.updateCartItem(productId, quantity),
     onSuccess: (cart) => {
       syncCart(cart);
       qc.setQueryData(qk.cart, cart);
@@ -115,7 +123,13 @@ export function useCreateAddress() {
       toast.success("Address saved");
     },
     onError: (e) =>
-      toast.error(e instanceof ApiException ? e.message : "Could not save address"),
+      toast.error(
+        e instanceof ApiException && e.code === "BAD_REQUEST"
+          ? "Please fill in all fields with valid details."
+          : e instanceof ApiException
+            ? e.message
+            : "Could not save address",
+      ),
   });
 }
 export function useDeleteAddress() {

@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "./Button";
 
@@ -11,7 +12,14 @@ interface ModalProps {
   size?: "sm" | "md" | "lg";
 }
 
-export function Modal({ open, onClose, title, children, footer, size = "md" }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  footer,
+  size = "md",
+}: ModalProps) {
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -27,12 +35,19 @@ export function Modal({ open, onClose, title, children, footer, size = "md" }: M
 
   const sizes = { sm: "max-w-sm", md: "max-w-lg", lg: "max-w-2xl" };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true">
+  // Render lewat portal ke <body> agar modal lepas dari stacking context layout
+  // (header/sidebar yang punya backdrop-blur sendiri). Tanpa ini, backdrop tidak
+  // menutupi area header sehingga ada strip atas yang tidak ter-blur.
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center"
+      role="dialog"
+      aria-modal="true"
+    >
       <button
         aria-label="Close dialog"
         onClick={onClose}
-        className="absolute inset-0 bg-ink-950/40 backdrop-blur-sm animate-fade-up"
+        className="absolute inset-0 bg-ink-950/60 backdrop-blur-md animate-fade-up"
       />
       <div
         className={cn(
@@ -42,7 +57,9 @@ export function Modal({ open, onClose, title, children, footer, size = "md" }: M
       >
         {title && (
           <div className="flex items-center justify-between border-b border-ink-100 px-5 py-4">
-            <h2 className="font-display text-lg font-semibold text-ink-900">{title}</h2>
+            <h2 className="font-display text-lg font-semibold text-ink-900">
+              {title}
+            </h2>
             <button
               onClick={onClose}
               aria-label="Close"
@@ -54,10 +71,13 @@ export function Modal({ open, onClose, title, children, footer, size = "md" }: M
         )}
         <div className="px-5 py-4">{children}</div>
         {footer && (
-          <div className="flex justify-end gap-2 border-t border-ink-100 px-5 py-4">{footer}</div>
+          <div className="flex justify-end gap-2 border-t border-ink-100 px-5 py-4">
+            {footer}
+          </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -88,8 +108,14 @@ export function ConfirmModal({
       size="sm"
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button variant={danger ? "danger" : "primary"} onClick={onConfirm} loading={loading}>
+          <Button variant="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant={danger ? "danger" : "primary"}
+            onClick={onConfirm}
+            loading={loading}
+          >
             {confirmLabel}
           </Button>
         </>
