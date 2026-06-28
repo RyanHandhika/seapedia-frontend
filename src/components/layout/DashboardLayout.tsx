@@ -67,23 +67,6 @@ export function DashboardLayout({ role }: { role: Role }) {
           </span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
-          <Link
-            to="/"
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
-            </svg>
-            Home
-          </Link>
           {nav.map((item) => (
             <NavLink
               key={item.to}
@@ -233,24 +216,6 @@ export function DashboardLayout({ role }: { role: Role }) {
               </button>
             </div>
             <nav className="space-y-1 p-3">
-              <Link
-                to="/"
-                onClick={() => setMobileNav(false)}
-                className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-ink-600 hover:bg-ink-50"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10" />
-                </svg>
-                Home
-              </Link>
               {nav.map((item) => (
                 <NavLink
                   key={item.to}

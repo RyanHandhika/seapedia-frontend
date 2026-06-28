@@ -10,7 +10,7 @@ const toneStyles = {
 export function Toaster() {
   const { toasts, dismiss } = useToastStore();
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col items-center gap-2 px-4 sm:bottom-6">
+    <div className="pointer-events-none fixed inset-x-0 top-4 z-[60] flex flex-col items-center gap-2 px-4 sm:top-6">
       {toasts.map((t) => (
         <button
           key={t.id}
